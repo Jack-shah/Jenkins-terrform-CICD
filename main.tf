@@ -12,7 +12,8 @@ provisioner "remote-exec"{
         "sudo systemctl start httpd",
         "sudo systemctl enable httpd",
         "sudo cd /var/www/html",
-         "echo 'Hello wajid' | sudo tee -a /var/www/html/index.html"
+        "echo 'Hello wajid' | sudo tee -a /var/www/html/index.html"
+        "sudo cd ~ && sudo systemctl restart httpd" #this line is added later  to be checked if not working then remove it.
     ]
     connection{
         type = "ssh"
