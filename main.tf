@@ -1,35 +1,35 @@
-provider "aws" {
-  region     = "us-east-1"
-}
-
-resource "aws_vpc" "abdulvpc" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
-
+resource "aws_instance" "abdul-webserver" {
+  ami           = "ami-08a52ddb321b32a8c"
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.abdulsg.id]
+  key_name      = "abdul-key"
   tags = {
-    Name = "abdulvpc"
-  }
+    Name = "abdul-webserver"
+  }  
+provisioner "remote-exec"{
+    inline =[
+        "sudo yum install httpd -y",
+        "sudo systemctl start httpd",
+        "sudo systemctl enable httpd",
+        "sudo cd /var/www/html",
+         "echo 'Hello wajid' | sudo tee -a /var/www/html/index.html"
+    ]
+    connection{
+        type = "ssh"
+        host = self.public_ip
+        user = "ec2-user"
+        private_key = file("./abdul-key")
+    }
 }
-resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.abdulvpc.id
-  cidr_block = "10.0.2.0/24"
+}
+resource "aws_key_pair" "abdul-key" {
+  key_name   = "abdul-key"
+  public_key= "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7OTkODuEWNDNptl2tj9e8+LabicPBntcSqhSG8X4qophX86PvTh9Ro9UKhsMKlx5eE7hBBz5F9ntO2egNzE5288x7MvkzYHWoImJlqJT0RHLapSI/eO57UHVmX8uGqUDaQWrBE8cqD40cF2nDW8mGyNF9kkgPZGOQ974QwWMjdgqaF9tsrB//fsjSWFLK+G9asQCpj2OvGN0cHJII4zinXebhlN0JqftcCc8IA+VNLL8h98ywgzCaIERSAlJIt2fyDfRyRTrR4R7B86vAF7IOtVqff0gCXP19nxlU7AkeVoomvvds0lUGo/8EsEsR3gcvfTIq0rWMcEwllNGqvsV2/6jG5kqLFTjCU6e957whT/MnNUqw2M1X1f5mVk0ctfJErAker+bzRZXCqn+xinHN0Sg9+Mb22tGgGHPX67ZjXdLj62FjmF1cWIrM1LNWJ8Ncn2f41nO/KQ9v9cTRnJ2Ryys6rEzJKaE9e2frYw4xklW4EyNou4MKPedGrZ9HDNE= ec2-user@ip-172-31-47-85.ec2.internal"
+}
 
-  tags = {
-    Name = "private"
-  }
-}
-resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.abdulvpc.id
-  cidr_block = "10.0.1.0/24"
-
-  tags = {
-    Name = "public"
-  }
-}
 resource "aws_security_group" "abdulsg" {
   name        = "abdulsg"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.abdulvpc.id
 
   ingress {
     description      = "TLS from VPC"
@@ -50,74 +50,5 @@ resource "aws_security_group" "abdulsg" {
     Name = "abdulsg"
   }
 }
-resource "aws_internet_gateway" "abduligw" {
-  vpc_id = aws_vpc.abdulvpc.id
 
-  tags = {
-    Name = "abduligw"
-  }
-}
-resource "aws_route_table" "public-rt" {
-  vpc_id = aws_vpc.abdulvpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"# define where to go or destination            we have not associate a subnet with route table yet 
-    gateway_id = aws_internet_gateway.abduligw.id    #define next target for or before final destination
-  }
-  }
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public-rt.id
-}
-resource "aws_key_pair" "samplepem" {
-  key_name   = "samplepem"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjhMv/F9TwSS7jkpWGu2vMhW1V/rS6sAFVxI8JqPsSRfSX5VM07PjY9y7z87QcyPATc6UWEzQAWgzTRQxJyW3+i5mfKXQQ3hTTnL5G0lx7mSE7A0afIjJEUj7RJCyfmTWqdTAprWfS3oi/emSvyYCL3YpYbRTUKT5NEVHq+jrPDZzljGWlfBjXKKTl4XE2SKNsjeuH9P2AxZSb5z6iP+dePMX/X7ksGAV3lzcBBfxBdhkEKkZO4zgQgBw0AoCNiILxm/N28H81nzzsiR78pbxUhyXquQOjnewJPDTReqNF300BmHEQsNAt9+0MnLikO6IQ+4Wh0oupNjSg2+L87RgiwO8/AxORZ59UYiIFcToEIbYk6cq8Uw48FO5NQC2JvFgabley02wf5g+nO9NI1CngvcT5O50iAUE0D1/+YK9tap6wF9inA2cke/oazvpDblgnV+rjN6agfrm7nX4d8fxNYFOzdzHHCU4HGCfIOzlfH4DVSsjjb0l0hB/s1ewi/JM= ubuntu@ip-172-31-32-168"
-}
-resource "aws_instance" "abdul-webserver" {
-  ami           = "ami-08a52ddb321b32a8c"
-  instance_type = "t2.micro"
-  subnet_id	= aws_subnet.public.id
-  key_name	= aws_key_pair.samplepem.id
-  vpc_security_group_ids = [aws_security_group.abdulsg.id]
-  tags = {
-    Name = "abdul-webserver"
-  }
-}
-resource "aws_instance" "abdul-dbserver" {
-  ami           = "ami-08a52ddb321b32a8c"
-  instance_type = "t2.micro"
-  subnet_id	= aws_subnet.private.id
-  key_name	= aws_key_pair.samplepem.id
-  vpc_security_group_ids = [aws_security_group.abdulsg.id]
-  tags = {
-    Name = "abdul-dbserver"
-  }
-}
-resource "aws_eip" "abdulpublicip" {
-  instance = aws_instance.abdul-webserver.id
-  domain   = "vpc"
-}
-resource "aws_eip" "abdulpublicipngw" {
-  domain   = "vpc"
-}
-
-resource "aws_nat_gateway" "abdulngw" {
-  allocation_id = aws_eip.abdulpublicipngw.id
-  subnet_id     = aws_subnet.public.id
-
-  tags = {
-    Name = "abdulngw"
-  }
-}
-resource "aws_route_table" "public-rt-NAT" {
-  vpc_id = aws_vpc.abdulvpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"# define where to go or destination            we have not associate a subnet with route table yet
-    gateway_id = aws_nat_gateway.abdulngw.id    #define next target for or before final destination
-  }
-  }
-resource "aws_route_table_association" "b" {
-  subnet_id      = aws_subnet.private.id
-  route_table_id = aws_route_table.public-rt-NAT.id
-}
