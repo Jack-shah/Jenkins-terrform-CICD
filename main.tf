@@ -26,6 +26,13 @@ resource "aws_security_group" "abdulsg" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"] # all
   }
+   ingress {
+    description      = "TLS from VPC"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"] # all
+  }
 
   egress {
     from_port        = 0
