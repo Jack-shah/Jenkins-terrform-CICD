@@ -7,12 +7,12 @@ resource "aws_instance" "abdul-webserver" {
     Name = "abdul-webserver"
   }
 provisioner "local-exec"{
-command="echo ${aws_instance.abdul-webserver.public_ip} >> /home/ec2-user/ans-terra/my-ip"
+command="sleep 30; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${aws_instance.abdul-webserver.public_ip}, -u ec2-user --private-key ./abdul-key httpd.yml"
 }
 }
 resource "aws_key_pair" "abdul-key" {
   key_name   = "abdul-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnKBHzfVBAhs0yef/Mt52losrvIF8SeL6/MkjeTZKCkIQx3Gk3q2TW+142HDSqPS50Gqh2vncS9vLVye69Sx4DhT4zX5bG2j8MLDKyepJERWA+02x1DxaEi5g0c9oKAMWAgMZTnUlBd7/dWcjwP8JwhNBi0kwDg9eZC+YZyy2zveIRMmuxWLeVoysNiePOvrXQ3wUU1ta+3CdCbQFXeEdQlnrzKa3TX4UAKBWVl0tPytWHSRfqqgStzPXBmnhmT7Pc0RJw8wRADx+/t2DnDKIrwMbGq2BmyXmhqERApA9PvYnmOMLtju6jiRpSrRrd4MCLNGF1V38Q/fjHDfh6nT7zvk0RRnZf2sJGi/XopSzdWP+uqNO7eL5Ghah+9wN3q9VrDKoqb/TkXW+dkWy8ZNA+JyZhpijcnWPiJLO6R+/3+ZNJ2qfsvnrygDzo3AffIBaMcejQzPEktAkg0kdmpbWDCcCoRnNAM74u5jQL2O++HFcPw2XqcPXeR9QkWKeL0ws= ec2-user@ip-172-31-47-85.ec2.internal" 
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnKBHzfVBAhs0yef/Mt52losrvIF8SeL6/MkjeTZKCkIQx3Gk3q2TW+142HDSqPS50Gqh2vncS9vLVye69Sx4DhT4zX5bG2j8MLDKyepJERWA+02x1DxaEi5g0c9oKAMWAgMZTnUlBd7/dWcjwP8JwhNBi0kwDg9eZC+YZyy2zveIRMmuxWLeVoysNiePOvrXQ3wUU1ta+3CdCbQFXeEdQlnrzKa3TX4UAKBWVl0tPytWHSRfqqgStzPXBmnhmT7Pc0RJw8wRADx+/t2DnDKIrwMbGq2BmyXmhqERApA9PvYnmOMLtju6jiRpSrRrd4MCLNGF1V38Q/fjHDfh6nT7zvk0RRnZf2sJGi/XopSzdWP+uqNO7eL5Ghah+9wN3q9VrDKoqb/TkXW+dkWy8ZNA+JyZhpijcnWPiJLO6R+/3+ZNJ2qfsvnrygDzo3AffIBaMcejQzPEktAkg0kdmpbWDCcCoRnNAM74u5jQL2O++HFcPw2XqcPXeR9QkWKeL0ws= ec2-user@ip-172-31-47-85.ec2.internal"
 }
 
 resource "aws_security_group" "abdulsg" {
