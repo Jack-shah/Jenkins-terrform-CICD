@@ -5,4 +5,5 @@ create provider.tf
 generate ssh-keygen to generate a key for connecting with the instance being created
 use local-exec provisioner for getting the IP of the infra created.
 So this lab is about creating an Ec2 instance on aws 
-and  getting Ip of the created instance on the local machine where terraform resource file is (main.tf)
+and  installing th Apache server on the created infra.
+ANSIBLE must be installedon the machine where you running the terrafrom command
