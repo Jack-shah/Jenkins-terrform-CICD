@@ -7,7 +7,7 @@ resource "aws_instance" "abdul-webserver" {
     Name = "abdul-webserver"
   }
 provisioner "local-exec"{
-command="sleep 30; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${aws_instance.abdul-webserver.public_ip}, -u ec2-user --private-key ./abdul-key httpd.yml"
+command="sleep 30; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${aws_instance.abdul-webserver.public_ip}, -u ec2-user --private-key ./abdul-key tomcat.yml"
 }
 }
 resource "aws_key_pair" "abdul-key" {
