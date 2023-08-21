@@ -5,37 +5,14 @@ resource "aws_instance" "abdul-webserver" {
   key_name      = "abdul-key"
   tags = {
     Name = "abdul-webserver"
-  }  
-provisioner "remote-exec"{
-    inline =[
-        "sudo yum install httpd -y",
-        "sudo systemctl start httpd",
-        "sudo systemctl enable httpd",
-        "sudo cp /tmp/primecare-html/* /var/www/html/", # primecare-html is the sample website folder
-        "sudo systemctl restart httpd"
-    ]
-    connection{
-        type = "ssh"
-        host = self.public_ip
-        user = "ec2-user"
-        private_key = file("./abdul-key")
-    }
-}
-provisioner "file"{
-      source="/home/ec2-user/terra-provisioner/primecare-html"
-      destination="/tmp/"
-      connection{
-      type="ssh"
-      user="ec2-user"
-      host=self.public_ip    
-      private_key=file("./abdul-key")
-      }
   }
-
+provisioner "local-exec"{
+command="echo ${aws_instance.abdul-webserver.public_ip} >> /home/ec2-user/ans-terra/my-ip"
+}
 }
 resource "aws_key_pair" "abdul-key" {
   key_name   = "abdul-key"
-  public_key= "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMNJajIZ0Sm7Ua9mw0lYh2xsHmaRbUKBEXBlQUdLS/O1yZ3U0/Nyz3usQaDPiA/2YWWKJSAszakz3K5XF0igbOM3atjY9gfc9k8aAcwmllR+Aw7dTNuEDxkPfvaUmEYiDkNnw+kbyJ8KdqnjOxF9VAHa5GP1kekjn6NkpFAfVQ3+uNeaAyIxa2jWnxHUZnmniR+sMENztV2ALV6V0WQ8qqc2TNlt3jbb4dNyyyIK6mU1/4IQwM2Xy0pdg8b2iDrraDV+OVmNHqk1OGYkbNML1Skp5amq3KvdFoW8uWA70xxlnTiq3G99U9h2km6TqrjJ7I71lK9stPJYYIDNIGVA4ht4LZ7ATznyiAiTR00DS078BVl/zN/PUVRjSJlY6aTh0c0G47imQtphcgGAs/6Dhs55YEDewrfAumwDIX6VZwm6LfQK49psxURIbYp9X1IjGXPxTvY3yxZy7GX1hECRvqNN+QBU0BJoKDz1s01uzRi3O81pEzFFTdfAeUowHUucE= ec2-user@ip-172-31-47-85.ec2.internal"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnKBHzfVBAhs0yef/Mt52losrvIF8SeL6/MkjeTZKCkIQx3Gk3q2TW+142HDSqPS50Gqh2vncS9vLVye69Sx4DhT4zX5bG2j8MLDKyepJERWA+02x1DxaEi5g0c9oKAMWAgMZTnUlBd7/dWcjwP8JwhNBi0kwDg9eZC+YZyy2zveIRMmuxWLeVoysNiePOvrXQ3wUU1ta+3CdCbQFXeEdQlnrzKa3TX4UAKBWVl0tPytWHSRfqqgStzPXBmnhmT7Pc0RJw8wRADx+/t2DnDKIrwMbGq2BmyXmhqERApA9PvYnmOMLtju6jiRpSrRrd4MCLNGF1V38Q/fjHDfh6nT7zvk0RRnZf2sJGi/XopSzdWP+uqNO7eL5Ghah+9wN3q9VrDKoqb/TkXW+dkWy8ZNA+JyZhpijcnWPiJLO6R+/3+ZNJ2qfsvnrygDzo3AffIBaMcejQzPEktAkg0kdmpbWDCcCoRnNAM74u5jQL2O++HFcPw2XqcPXeR9QkWKeL0ws= ec2-user@ip-172-31-47-85.ec2.internal" 
 }
 
 resource "aws_security_group" "abdulsg" {
