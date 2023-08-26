@@ -9,4 +9,3 @@ So this lab is about creating an Ec2 instance on aws
 installing apache server on it using terraform provisioner.
 .
 ...
-added new line for test
