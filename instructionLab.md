@@ -11,3 +11,5 @@ installing apache server on it using terraform provisioner.
 ...
 added new line for test
 added another line for testing
+
+this line is for testing git push rejection strategy
